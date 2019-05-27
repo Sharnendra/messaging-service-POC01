@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
 
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -11,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,22 +27,38 @@ import com.app.messagingservice.service.MessagingService;
 @RestController
 public class MessagingServiceController {
 	
+	private static final org.slf4j.Logger log = LoggerFactory.getLogger(MessagingServiceController.class);
+	
 	@Autowired
 	private MessagingService messageService;
+	
+	@GetMapping("/getSmS")
+	public String startApp()
+	{
+		return "APP IS RUNNING!!";
+	}
 	
 
 	@PostMapping("/sendSMS")
     public ResponseEntity<String> sendSMSOnPhone(@RequestBody OtpDetailsReqBean otpDetailsReqBean) 
 	{
-		SimpleClientHttpRequestFactory clientHttpReq = new SimpleClientHttpRequestFactory();
-		Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress("proxy.cognizant.com", 6050));
-		clientHttpReq.setProxy(proxy);
-		RestTemplate restTemplate = new RestTemplate(clientHttpReq);
+		log.info("=================in sendSMSOnPhone line 1 ==============");
+		//SimpleClientHttpRequestFactory clientHttpReq = new SimpleClientHttpRequestFactory();
+		log.info("=================in sendSMSOnPhone line 2 ==============");
+		//Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress("proxy.cognizant.com", 6050));
+		log.info("=================in sendSMSOnPhone line 3 ==============");
+		//clientHttpReq.setProxy(proxy);
+		log.info("=================in sendSMSOnPhone line 4 ==============");
+		//RestTemplate restTemplate = new RestTemplate(clientHttpReq);
+		RestTemplate restTemplate = new RestTemplate();
+		log.info("=================in sendSMSOnPhone line 5 ==============");
 		ResponseEntity<String> response=null;
 		try
 		{
+			log.info("=================in sendSMSOnPhone try 1 ==============");
 			response=restTemplate.exchange(messageService.sendSMSOnPhone(otpDetailsReqBean),
 			HttpMethod.GET, getHeaders(),String.class);
+			log.info("=================in sendSMSOnPhone try 1 ==============");
 		}
 		catch (Exception ex)
 		{

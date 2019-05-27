@@ -11,7 +11,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name="OTP_MASTER")
-public class OtpEntity {
+public class OtpMaster {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
@@ -36,12 +36,12 @@ public class OtpEntity {
 	@Column(name="EXPIRE_TIME")
 	private Date expireTime;
 
-	public OtpEntity() {
+	public OtpMaster() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
 
-	public OtpEntity(long otpId, String sapCode, String mobileNumber, String uuid, int otpValue, Date creationTime,
+	public OtpMaster(long otpId, String sapCode, String mobileNumber, String uuid, int otpValue, Date creationTime,
 			Date expireTime) {
 		super();
 		this.otpId = otpId;

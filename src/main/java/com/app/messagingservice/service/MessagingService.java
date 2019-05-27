@@ -3,29 +3,32 @@ package com.app.messagingservice.service;
 import java.net.URLEncoder;
 import java.util.Date;
 
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.app.messagingservice.bean.OtpDetailsReqBean;
 import com.app.messagingservice.bean.OtpValidationReqBean;
 import com.app.messagingservice.config.MessagingConfig;
-import com.app.messagingservice.entity.OtpEntity;
+import com.app.messagingservice.entity.OtpMaster;
 import com.app.messagingservice.repository.OTP_intefarce;
 import com.app.messagingservice.repository.OtpRepository;
 
 @Service
 public class MessagingService implements OTP_intefarce{
 	
+	private static final org.slf4j.Logger log = LoggerFactory.getLogger(MessagingService.class);
 	@Autowired
 	private MessagingConfig smsConfig;
 	
 	@Autowired
 	private OtpRepository otpRepo;
-	private OtpEntity otpEntity;
+	private OtpMaster otpEntity;
 	
 	public String sendSMSOnPhone(OtpDetailsReqBean otpDetailsReqBean) {
 		if(saveOTP(otpDetailsReqBean))
 		{
+			log.info("=================in sendSMSOnPhone line 1 ==============");
 			try {
 				// Send data
 				return "http://api.textlocal.in/send/?" 
@@ -44,14 +47,17 @@ public class MessagingService implements OTP_intefarce{
 	}
 	
 	private boolean saveOTP(OtpDetailsReqBean otpDetailsReqBean) {
-		OtpEntity otpEntity= new OtpEntity();
+		log.info("=================in saveOTP line 1 ==============");
+		OtpMaster otpEntity= new OtpMaster();
 		otpEntity.setSapCode(otpDetailsReqBean.getSap_code());
 		otpEntity.setOtpValue(getOpt());
 		otpEntity.setMobileNumber(otpDetailsReqBean.getMobile_number());
 		otpEntity.setUuid(otpDetailsReqBean.getUuid());
 		otpEntity.setCreationTime(new Date());
 		otpEntity.setExpireTime(new Date(System.currentTimeMillis()+5*60*1000));
+		log.info("=================in saveOTP line 2 ==============");
 		if(otpRepo.save(otpEntity)!=null) {
+			log.info("=================in saveOTP line 3 ==============");
 			this.otpEntity=otpEntity;
 			return true;
 		}else {
@@ -60,7 +66,7 @@ public class MessagingService implements OTP_intefarce{
 	}
 	
 	public boolean validateOtp(OtpValidationReqBean otpdetails) {
-		OtpEntity otpEntity=otpRepo.findByUserId(otpdetails.getSap_code(),otpdetails.getUuid(),otpdetails.getOtpValue());
+		OtpMaster otpEntity=otpRepo.findByUserId(otpdetails.getSap_code(),otpdetails.getUuid(),otpdetails.getOtpValue());
 		if(otpEntity!=null) {
 			if (otpdetails.getOtpValue()==otpEntity.getOtpValue()) {
 				System.err.println("df d "+otpdetails.getOtpValue());
